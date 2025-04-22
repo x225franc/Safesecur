@@ -1,0 +1,30 @@
+:root {
+	--p: #007bff;
+	--pr: #1a466c;
+	--s: #d72f3f;
+    --t: #edf2f2;
+	--su: #28a745;
+	--d: #dc3545;
+	--ds: #ba0b1c;
+	--w: #ffc107;
+	--i: #17a2b8;
+	--l: #f8f9fa;
+	--da: #18181d;
+}
+
+body {
+    background-color: var(--t) !important; /* Utilisation de la variable pour le background */
+    color: var(--da); /* Optionnel : couleur du texte */
+    margin: 0; /* Supprime les marges par défaut */
+    font-family: 'Poppins', sans-serif; /* Utilisation de la police Poppins */
+}
+
+.page-content {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 140px); /* Hauteur de la page moins le header et le footer */
+    padding: 20px; /* Ajoute une marge intérieure */
+    margin: 0 auto; /* Centre horizontalement le contenu */
+    max-width: 1200px; /* Limite la largeur maximale du contenu */
+    box-sizing: border-box; /* Inclut le padding dans la largeur totale */
+}
