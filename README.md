@@ -1,47 +1,63 @@
-# SAFESECUR
+# SafeSecur
 
-## Présentation
+Application web dédiée à la sécurité et à la gestion de services de protection.
 
-SAFESECUR est une application web pour une entreprise spécialisée dans les solutions de sécurité, la protection incendie et les systèmes de contrôle d'accès pour professionnels.
+## À propos
 
-## Fonctionnalités
-
-- Site vitrine présentant les services et l'expertise de l'entreprise
-- Catalogue de produits avec système de gestion
-- Section actualités pour partager les dernières nouvelles
-- Système de contact avec formulaire
-- Interface d'administration sécurisée par JWT
+SafeSecur est une plateforme complète offrant des services dans le domaine de la sécurité, comprenant un catalogue de produits, des actualités et des informations de contact.
 
 ## Technologies utilisées
 
 - **Frontend**: Vue.js 3, Bootstrap 5
-- **Backend**: Express.js, Node.js
+- **Backend**: Node.js, Express
 - **Base de données**: MySQL
-- **Authentification**: JWT (JSON Web Tokens)
+- **Autres**: JWT pour l'authentification, Nodemailer pour les emails, Multer pour la gestion des fichiers
+
+## Fonctionnalités
+
+- Catalogue de produits avec catégories
+- Section d'actualités
+- Page de contact
+- Authentification utilisateur
+- Interface d'administration pour gérer le contenu
 
 ## Installation
 
 1. Cloner le dépôt
-2. Installer les dépendances `npm install`
-3. Configurer le fichier `.env` avec vos informations de connexion à la base de données
-4. Lancer le serveur de développement `npm run dev`
-5. Lancer le serveur backend `npm run server`
+```
+git clone [URL_DU_REPO]
+cd safesecur
+```
 
-## Développement
+2. Installer les dépendances
+```
+npm install
+```
 
-- `npm run dev` - Lance le serveur de développement frontend
-- `npm run server` - Lance le serveur backend
-- `npm run build` - Compile le projet pour la production
+3. Configurer la base de données
+   - Importer le fichier `safesecur.sql` dans votre serveur MySQL
+   - Créer un fichier `.env` à la racine du projet avec les variables d'environnement nécessaires
+
+4. Lancer l'application en développement
+```
+npm run dev       # Pour le frontend
+npm run server    # Pour le backend (dans un autre terminal)
+```
+
+## Déploiement
+
+Pour construire l'application pour la production :
+```
+npm run build
+```
 
 ## Structure du projet
 
-- `/server` - Code du serveur backend
-- `/src` - Code source du frontend
-  - `/assets` - Images et styles
-  - `/components` - Composants Vue réutilisables
-  - `/views` - Pages de l'application
-  - `/router` - Configuration des routes
+- `src/` : Code source du frontend Vue.js
+- `server/` : Code source du backend Node.js
+- `public/` : Ressources publiques
+- `uploads/` : Fichiers téléchargés par les utilisateurs
 
 ## Contact
 
-Pour plus d'informations, contactez SafeSecur à contact@safesecur.com
+Pour plus d'informations, veuillez contacter l'équipe SafeSecur.

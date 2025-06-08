@@ -1,30 +1,40 @@
-import express from "express";
-import mysql from "mysql";
-import cors from "cors";
-import bcrypt from "bcrypt";
-import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
+const express = require("express");
+const mysql = require("mysql");
+const cors = require("cors");
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+
+// importation de dotenv
+const dotenv = require("dotenv");
+const { join } = require("path");
+const jwt = require("jsonwebtoken");
+
+// configuration de dotenv
+dotenv.config({ path: join(process.cwd(), "./.env") });
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // importation de middleware pour les images
-import multer from "multer";
-import path from "path";
-import sharp from "sharp";
-import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
+const multer = require("multer");
+const path = require("path");
+const sharp = require("sharp");
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
 
-import nodemailer from "nodemailer";
-import { join } from "path";
-
-// importation des composants
-import EmailTemplate from "./emailTemplate.js";
-
-// Par celle-ci
-const logo = `${process.env.BACKEND_URL}/logo.png`;
+// logo
+const logo = "https://safesecur.com/logo.png"; // URL par défaut pour la production
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+
+// Ajouter cette route pour servir le logo depuis le dossier public
+app.get("/logo.png", (req, res) => {
+	res.sendFile(path.join(__dirname, "public", "logo.png"));
+});
+
+// console.log("SERVER_URL:", process.env.SERVER_URL);
+// console.log("Chemin du logo:", logo);
 
 // Configuration de multer pour le stockage des fichiers
 const storage = multer.diskStorage({
@@ -99,10 +109,6 @@ const uploadCatalogue = multer({
 // Middleware pour servir les fichiers statiques
 app.use("/images", express.static("uploads/images"));
 
-// configuration de dotenv
-dotenv.config({ path: join(process.cwd(), "./.env") });
-const JWT_SECRET = process.env.JWT_SECRET;
-
 // MySQL Connection
 const db = mysql.createConnection({
 	host: process.env.HOST,
@@ -115,13 +121,22 @@ const db = mysql.createConnection({
 const transporter = nodemailer.createTransport({
 	host: process.env.MAIL_HOST,
 	port: process.env.MAIL_PORT,
-	secure: false,
-	requireTLS: true,
+	secure: false, // use STARTTLS
+	requireTLS: true, // force upgrade to secure connection
 	auth: {
 		user: process.env.MAIL_USER,
 		pass: process.env.MAIL_PASSWORD,
 	},
 });
+
+// Vérifier la configuration du transporteur
+// transporter.verify((error, success) => {
+// 	if (error) {
+// 		console.error("Erreur de configuration SMTP:", error);
+// 	} else {
+// 		console.log("Serveur prêt à envoyer des emails");
+// 	}
+// });
 
 db.connect((err) => {
 	if (err) {
@@ -1127,19 +1142,17 @@ app.delete("/actualites/:id", verifyToken, (req, res) => {
 
 // Route pour traiter le formulaire de contact (envoi d'email direct)
 app.post("/contact", (req, res) => {
-	const {
-		name,
-		email,
-		phone,
-		subject,
-		message,
-		product_id,
-		product_details,
-		wantCatalogue,
-	} = req.body;
+	console.log("Requête reçue sur /contact:", req.body);
+
+	// Extraire les données du body
+	const { name, email, phone, subject, message, product_details } =
+		req.body || {};
+
+	console.log("Données extraites:", { name, email, phone, subject });
 
 	// Validation basique côté serveur
 	if (!name || !email || !subject || !message) {
+		console.log("Validation échouée:", { name, email, subject, message });
 		return res.status(400).json({
 			success: false,
 			message: "Veuillez remplir tous les champs obligatoires",
@@ -1166,63 +1179,98 @@ app.post("/contact", (req, res) => {
 	}
 
 	try {
-		// Préparation du contenu de l'email
-		let text1 = `Vous avez reçu un message de la part de <b>${name}</b>
-    <br>Email: <b>${email}</b>`;
+		// Préparation du contenu de l'email directement en HTML simple
+		const currentYear = new Date().getFullYear();
 
-		if (phone) {
-			text1 += `<br>Téléphone: <b>${phone}</b>`;
-		}
+		// Logo fixe en tant que texte, sans dépendance externe
+		const logoHTML = `<div align='center'>
+		<h3 style="color: #0056b3; margin: 10px 0;">SAFESECUR</h3>
+		<p style="margin: 0; font-size: 12px;">Votre sécurité , notre priorit</p>
+		</div>`;
 
-		text1 += `<br>Objet: <b>${subject}</b>`;
-
-		if (wantCatalogue) {
-			text1 += `<br><b>Demande de catalogue: OUI</b>`;
-		}
-
-		let text2 = `<b>Message:</b><br>${message.replace(/\n/g, "<br>")}`;
-
-		// Ajouter des informations sur le produit si fourni
-		if (product_details) {
-			text2 += `<br><br><b>Produit concerné:</b><br> 
-            Nom: ${product_details.name}<br> 
-            Catégorie: ${product_details.category}<br> 
-            Prix: ${new Intl.NumberFormat("fr-FR", {
-							style: "currency",
-							currency: "XOF",
-						}).format(product_details.price)}`;
-		}
-
-		// Créer le template d'email
-		const emailTemplate = EmailTemplate({
-			text1: text1,
-			text2: text2,
-			logo: logo,
-		});
+		// Création d'un template d'email HTML simple et autonome
+		const emailHTML = `
+		<!DOCTYPE html>
+		<html>
+			<head>
+			<meta charset='utf-8' />
+			</head>
+			<body style='font-family: Arial, sans-serif;'>
+			<div style='max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 5px; padding: 20px;'>
+				<div style='background-color: #f9f9f9; padding: 15px; text-align: center; margin-bottom: 20px;'>
+				<h2 style='color: #0056b3; margin: 0;'>Nouveau message de contact</h2>
+				</div>
+				
+				<div style='padding: 15px; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05);'>
+				<p><strong>Nom:</strong> ${name}</p>
+				<p><strong>Email:</strong> ${email}</p>
+				${phone ? `<p><strong>Téléphone:</strong> ${phone}</p>` : ""}
+				<p><strong>Objet:</strong> ${subject}</p>
+				
+				<hr style='border: none; border-top: 1px solid #eaeaea; margin: 20px 0;'>
+				
+				<p><strong>Message:</strong></p>
+				<div style='background-color: #f9f9f9; padding: 15px; border-left: 3px solid #0056b3;'>
+					${message.replace(/\n/g, "<br>")}
+				</div>
+				
+				${
+					product_details
+						? `
+				<hr style='border: none; border-top: 1px solid #eaeaea; margin: 20px 0;'>
+				<p><strong>Produit concerné:</strong></p>
+				<div style='background-color: #f9f9f9; padding: 15px;'>
+					<p><strong>Nom:</strong> ${product_details.name}</p>
+					<p><strong>Catégorie:</strong> ${product_details.category}</p>
+					<p><strong>Prix:</strong> ${new Intl.NumberFormat("fr-FR", {
+						style: "currency",
+						currency: "XOF",
+					}).format(product_details.price)}</p>
+				</div>
+				`
+						: ""
+				}
+				</div>
+				
+				<div style='text-align: center; margin-top: 20px; padding: 15px; background-color: #f9f9f9;'>
+				<p style='margin: 5px 0; font-size: 12px; color: #666;'>SAFESECUR © ${currentYear} - Tous droits réservés</p>
+				</div>
+			</div>
+			
+			${logoHTML}
+			</body>
+		</html>
+    `;
 
 		// Configuration du mail
 		const mailOptions = {
-			from: email, // email de l'expéditeur
+			from: `"Contact SAFESECUR" <${process.env.MAIL_USER}>`,
 			to: process.env.MAIL_USER, // email de destination configuré dans .env
 			replyTo: email, // Pour que les réponses aillent directement au client
 			subject: `Safesecur - Nouvelle demande: ${subject}`,
-			html: emailTemplate,
+			html: emailHTML,
 		};
 
-		// Utiliser le transporteur SMTP déjà configuré au début du fichier
+		// Utiliser le transporteur SMTP
 		transporter.sendMail(mailOptions, (err, info) => {
 			if (err) {
-				console.error("Erreur d'envoi d'email:", err);
+				console.error("Erreur d'envoi d'email détaillée:");
+				console.error("Code:", err.code);
+				console.error("Message:", err.message);
+				console.error("Response:", err.response);
+				console.error("Stack:", err.stack);
 				return res.status(500).json({
 					success: false,
-					message: "Erreur lors de l'envoi de l'email",
+					message: "Erreur lors de l'envoi de l'email: " + err.message,
 				});
 			}
+
+			console.log("Email envoyé avec succès:", info.response);
 
 			// Enregistrer l'heure d'envoi pour l'anti-spam
 			global.lastSubmissions.set(clientIP, now);
 
-			// Nettoyage des anciennes entrées dans la Map anti-spam (pour éviter les fuites de mémoire)
+			// Nettoyage des anciennes entrées dans la Map anti-spam
 			const oneHourAgo = now - 3600000;
 			for (const [ip, time] of global.lastSubmissions.entries()) {
 				if (time < oneHourAgo) {
@@ -1240,6 +1288,7 @@ app.post("/contact", (req, res) => {
 		return res.status(500).json({
 			success: false,
 			message: "Une erreur s'est produite lors du traitement de votre demande",
+			error: error.message,
 		});
 	}
 });
@@ -1261,8 +1310,17 @@ app.get("/categories/public", (req, res) => {
 	});
 });
 
-// Start Server
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-	console.log(`Server running on port : ${PORT}`);
-});
+if (process.env.ONLINE == "false") {
+	const PORT = process.env.PORT;
+	app.listen(PORT, () => {
+		console.log(`Server running on local port : ${PORT}`);
+	});
+} else {
+	app.listen();
+	console.log("Server running online");
+	app.get("/", (req, res) => {
+		res.redirect("https://safesecur.com");
+		// 	// res.send(generateMetaTags(staticMetaTags));
+		// 	// res.send("Hello, world!");
+	});
+}

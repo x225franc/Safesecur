@@ -80,7 +80,7 @@
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -102,7 +102,7 @@
 				this.error = null;
 
 				axios
-					.post(`${window.config.API_URL}/login`, this.form)
+					.post(`${window.config.SERVER_URL}/login`, this.form)
 					.then((response) => {
 						if (response.data.success) {
 							// Stocker le token JWT dans le localStorage

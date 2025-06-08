@@ -191,12 +191,12 @@
 				const token = localStorage.getItem("token");
 
 				if (!token) {
-					this.$router.push("/login");
+					this.$router.push("/connexion");
 					return;
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -206,13 +206,13 @@
 							this.isAuthenticated = true;
 							this.fetchActualite(); // Charger les données seulement après authentification confirmée
 						} else {
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						}
 					})
 					.catch((error) => {
 						console.error("Erreur d'authentification:", error);
 						localStorage.removeItem("token");
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					});
 			},
 
@@ -225,12 +225,12 @@
 				if (!token) {
 					this.loadError = "Authentification requise";
 					this.loading = false;
-					this.$router.push("/login");
+					this.$router.push("/connexion");
 					return;
 				}
 
 				axios
-					.get(`${window.config.API_URL}/actualites/${this.actualiteId}`, {
+					.get(`${window.config.SERVER_URL}/actualites/${this.actualiteId}`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -273,7 +273,7 @@
 								"Non autorisé. Vous devez être connecté pour accéder à cette page.";
 							localStorage.removeItem("token");
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						} else {
 							this.loadError =
@@ -294,7 +294,7 @@
 					this.errorMessage =
 						"Vous devez être connecté pour modifier une actualité.";
 					setTimeout(() => {
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					}, 2000);
 					return;
 				}
@@ -332,7 +332,7 @@
 
 				axios
 					.put(
-						`${window.config.API_URL}/actualites/${this.actualiteId}`,
+						`${window.config.SERVER_URL}/actualites/${this.actualiteId}`,
 						formData,
 						{
 							headers: {
@@ -359,7 +359,7 @@
 								"Non autorisé. Vous devez être connecté pour cette action.";
 							localStorage.removeItem("token");
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						} else {
 							this.errorMessage =
@@ -402,7 +402,7 @@
 				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
 				// Retourner l'URL complète
-				return `${window.config.API_URL}${normalizedPath}`;
+				return `${window.config.SERVER_URL}${normalizedPath}`;
 			},
 		},
 	};
@@ -434,8 +434,7 @@
 
 	/* Hero Section - Smaller for form pages */
 	.page-hero.small-hero {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/news-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		text-align: center;
 		padding: 50px 0;

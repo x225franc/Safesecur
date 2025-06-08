@@ -382,7 +382,7 @@
 			// Fetch categories for dropdown
 			fetchCategories() {
 				axios
-					.get(`${window.config.API_URL}/categories/public`)
+					.get(`${window.config.SERVER_URL}/categories/public`)
 					.then((response) => {
 						this.categories = response.data;
 					})
@@ -394,7 +394,7 @@
 			// Fetch all products
 			fetchProducts() {
 				axios
-					.get(`${window.config.API_URL}/catalogue`)
+					.get(`${window.config.SERVER_URL}/catalogue`)
 					.then((response) => {
 						this.products = response.data;
 
@@ -455,7 +455,7 @@
 				}
 
 				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-				return `${window.config.API_URL}${normalizedPath}`;
+				return `${window.config.SERVER_URL}${normalizedPath}`;
 			},
 
 			// Form validation
@@ -576,7 +576,7 @@
 
 				// Send to backend
 				axios
-					.post(`${window.config.API_URL}/contact`, formData)
+					.post(`${window.config.SERVER_URL}/contact`, formData)
 					.then((response) => {
 						this.formSubmitted = true;
 						// Enregistrer l'heure d'envoi
@@ -640,7 +640,7 @@
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},

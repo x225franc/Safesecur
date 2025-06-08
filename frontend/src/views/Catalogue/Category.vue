@@ -241,12 +241,12 @@
 				const token = localStorage.getItem("token");
 
 				if (!token) {
-					this.$router.push("/login");
+					this.$router.push("/connexion");
 					return;
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -255,13 +255,13 @@
 						if (response.data && response.data.authenticated) {
 							this.fetchCategories();
 						} else {
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						}
 					})
 					.catch((error) => {
 						console.error("Erreur d'authentification:", error);
 						localStorage.removeItem("token");
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					});
 			},
 
@@ -273,7 +273,7 @@
 				const token = localStorage.getItem("token");
 
 				axios
-					.get(`${window.config.API_URL}/categories`, {
+					.get(`${window.config.SERVER_URL}/categories`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -354,8 +354,8 @@
 				this.modalError = null;
 
 				const url = this.isEditing
-					? `${window.config.API_URL}/categories/${this.categoryForm.id}`
-					: `${window.config.API_URL}/categories`;
+					? `${window.config.SERVER_URL}/categories/${this.categoryForm.id}`
+					: `${window.config.SERVER_URL}/categories`;
 
 				const method = this.isEditing ? "put" : "post";
 
@@ -382,7 +382,7 @@
 								"Non autorisé. Vous devez être connecté pour cette action.";
 							localStorage.removeItem("token");
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						} else {
 							this.modalError =
@@ -430,7 +430,7 @@
 
 				axios
 					.delete(
-						`${window.config.API_URL}/categories/${this.categoryToDelete.id}`,
+						`${window.config.SERVER_URL}/categories/${this.categoryToDelete.id}`,
 						{
 							headers: {
 								Authorization: `Bearer ${token}`,
@@ -451,7 +451,7 @@
 								"Non autorisé. Vous devez être connecté pour cette action.";
 							localStorage.removeItem("token");
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						} else {
 							this.deleteError =
@@ -493,8 +493,7 @@
 
 	/* Hero Section */
 	.page-hero.small-hero {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/catalogue-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		text-align: center;
 		padding: 50px 0;

@@ -160,7 +160,7 @@
 				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
 				// Retourner l'URL complète
-				return `${window.config.API_URL}${normalizedPath}`;
+				return `${window.config.SERVER_URL}${normalizedPath}`;
 			},
 
 			fetchActualite() {
@@ -169,7 +169,7 @@
 				const id = this.$route.params.id;
 
 				axios
-					.get(`${window.config.API_URL}/actualites/${id}`)
+					.get(`${window.config.SERVER_URL}/actualites/${id}`)
 					.then((response) => {
 						this.actualite = response.data;
 					})
@@ -218,7 +218,7 @@
 				}
 
 				axios
-					.delete(`${window.config.API_URL}/actualites/${this.actualite.id}`, {
+					.delete(`${window.config.SERVER_URL}/actualites/${this.actualite.id}`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -233,7 +233,7 @@
 						if (error.response && error.response.status === 401) {
 							alert("Non autorisé. Veuillez vous reconnecter.");
 							localStorage.removeItem("token");
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						} else {
 							alert("Erreur lors de la suppression. Veuillez réessayer.");
 						}
@@ -250,7 +250,7 @@
 
 				// Vérifier si le token est valide
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -295,8 +295,7 @@
 	/* Hero Section */
 	.page-hero.actualite-hero {
 		min-height: 300px;
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/news-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		position: relative;
 		display: flex;

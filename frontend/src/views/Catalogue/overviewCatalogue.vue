@@ -189,7 +189,7 @@
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -210,7 +210,7 @@
 
 				// Utiliser la route générique du catalogue avec filtre par ID
 				axios
-					.get(`${window.config.API_URL}/catalogue/product/${this.productId}`)
+					.get(`${window.config.SERVER_URL}/catalogue/product/${this.productId}`)
 					.then((response) => {
 						if (response.data) {
 							this.product = response.data;
@@ -251,7 +251,7 @@
 				// Utilisation des catégories déjà chargées dans le catalogue
 				axios
 					.get(
-						`${window.config.API_URL}/catalogue/category-name/${this.product.category_id}`
+						`${window.config.SERVER_URL}/catalogue/category-name/${this.product.category_id}`
 					)
 					.then((response) => {
 						if (response.data && response.data.name) {
@@ -275,7 +275,7 @@
 				// Utiliser la route des produits filtrée par catégorie
 				axios
 					.get(
-						`${window.config.API_URL}/catalogue/by-category/${this.product.category_id}`
+						`${window.config.SERVER_URL}/catalogue/by-category/${this.product.category_id}`
 					)
 					.then((response) => {
 						// Filter out current product and limit to 4 products
@@ -305,7 +305,7 @@
 				}
 
 				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-				return `${window.config.API_URL}${normalizedPath}`;
+				return `${window.config.SERVER_URL}${normalizedPath}`;
 			},
 
 			// Format price
@@ -350,8 +350,7 @@
 
 	/* Hero Section */
 	.page-hero.small-hero {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/catalogue-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		text-align: center;
 		padding: 50px 0;

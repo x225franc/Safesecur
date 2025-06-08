@@ -192,7 +192,7 @@
 	import {
 		convertImageToPNG,
 		isAlreadyPNG,
-	} from "@/components/utils/ImageConverter";
+	} from "../../components/utils/ImageConverter";
 
 	export default {
 		name: "CreateProduct",
@@ -231,12 +231,12 @@
 				const token = localStorage.getItem("token");
 
 				if (!token) {
-					this.$router.push("/login");
+					this.$router.push("/connexion");
 					return;
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -246,13 +246,13 @@
 							this.isAuthenticated = true;
 							this.fetchCategories();
 						} else {
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						}
 					})
 					.catch((error) => {
 						console.error("Erreur d'authentification:", error);
 						localStorage.removeItem("token");
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					});
 			},
 
@@ -261,7 +261,7 @@
 				const token = localStorage.getItem("token");
 
 				axios
-					.get(`${window.config.API_URL}/categories`, {
+					.get(`${window.config.SERVER_URL}/categories`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -419,7 +419,7 @@
 				if (!token) {
 					this.errorMessage = "Vous devez être connecté pour créer un produit.";
 					setTimeout(() => {
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					}, 2000);
 					return;
 				}
@@ -449,7 +449,7 @@
 				};
 
 				axios
-					.post(`${window.config.API_URL}/catalogue/create`, formData, config)
+					.post(`${window.config.SERVER_URL}/catalogue/create`, formData, config)
 					.then((response) => {
 						this.successMessage = "Le produit a été ajouté avec succès!";
 						this.resetForm();
@@ -466,7 +466,7 @@
 								"Non autorisé. Vous devez être connecté pour cette action.";
 							localStorage.removeItem("token");
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						} else if (
 							error.response &&
@@ -514,8 +514,7 @@
 
 	/* Hero Section - Smaller for form pages */
 	.page-hero.small-hero {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/catalogue-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		text-align: center;
 		padding: 50px 0;

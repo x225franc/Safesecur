@@ -19,6 +19,10 @@ export default defineConfig({
     port: 3006,
   },
   define: {
-    'window.config.FRONTEND_URL': JSON.stringify(process.env.FRONTEND_URL)
+    // 'window.config.FRONTEND_URL': JSON.stringify('http://localhost:3006'),
+    // 'window.config.SERVER_URL': JSON.stringify('http://localhost:3005'),
+    'window.config.FRONTEND_URL': JSON.stringify('https://safesecur.com'),
+    'window.config.SERVER_URL': JSON.stringify('https://server.safesecur.com'),
+    
   }
 })

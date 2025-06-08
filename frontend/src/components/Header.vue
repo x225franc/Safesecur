@@ -84,15 +84,6 @@
 							</router-link>
 						</li>
 						<li class="nav-item d-block d-lg-none">
-							<router-link
-								class="nav-link btn btn-outline-dark d-flex align-items-center justify-content-start"
-								@click="toggleChat"
-								@click.native="closeMenu"
-								to="/Chat"
-							>
-								<span class="icon fi-rr-comment"></span>
-								<span class="text mb-1 ms-1">Chat</span>
-							</router-link>
 						</li>
 					</ul>
 				</div>
@@ -108,7 +99,6 @@
 		name: "Header",
 		data() {
 			return {
-				isChatOpen: false, // État pour afficher ou masquer la fenêtre de chat
 				isHidden: false, // État pour masquer ou afficher le header
 				lastScrollY: 0, // Position précédente du scroll
 			};
@@ -215,34 +205,4 @@
 		}
 	}
 
-	/* Styles pour la fenêtre de chat */
-	.chat-window {
-		position: fixed;
-		bottom: 20px;
-		right: 20px;
-		width: 300px;
-		height: 80%;
-		background-color: white;
-		border-radius: 10px;
-		overflow: hidden;
-		z-index: 1050;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	}
-
-	.chat-header {
-		background-color: var(--da); /* Utilisez votre variable de couleur primaire */
-		color: white;
-		padding: 10px;
-	}
-
-	.chat-body {
-		padding: 10px;
-		font-size: 0.9rem;
-	}
-
-	@media (min-width: 992px) {
-		.chat-window {
-			height: 60%;
-		}
-	}
 </style>

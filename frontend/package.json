@@ -1,47 +1,28 @@
 {
   "name": "safesecur",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "nodemon server/index.js",
     "build": "vite build",
-    "preview": "vite preview",
-    "swiper": "^11.1.0"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@flaticon/flaticon-uicons": "^3.3.1",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.8.4",
-    "bcrypt": "^5.1.1",
-    "body-parser": "^2.2.0",
     "bootstrap": "^5.3.5",
-    "cors": "^2.8.5",
     "dompurify": "^3.1.0",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "fs": "^0.0.1-security",
     "js-cookie": "^3.0.5",
-    "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
-    "multer": "^1.4.5-lts.2",
-    "mysql": "^2.18.1",
-    "nodemailer": "^6.10.1",
     "notistack": "^3.0.1",
-    "path": "^0.12.7",
     "safesecur": "file:",
-    "sharp": "^0.34.1",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
-    "stream": "^0.0.2",
-    "uuid": "^11.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
-    "nodemon": "^3.1.9",
     "vite": "^6.2.1",
     "vite-plugin-vue-devtools": "^7.7.2"
   }

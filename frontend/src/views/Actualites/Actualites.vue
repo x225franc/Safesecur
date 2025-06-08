@@ -131,7 +131,7 @@
 				this.error = null;
 
 				axios
-					.get(`${window.config.API_URL}/actualites`)
+					.get(`${window.config.SERVER_URL}/actualites`)
 					.then((response) => {
 						this.actualites = response.data;
 					})
@@ -154,7 +154,7 @@
 
 				// Vérifier si le token est valide
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -183,12 +183,12 @@
 					// Si le chemin d'image commence par http ou par / (URL absolue)
 					if (imgPath.startsWith("http") || imgPath.startsWith("/")) {
 						return {
-							backgroundImage: `url(${window.config.API_URL}${imgPath})`,
+							backgroundImage: `url(${window.config.SERVER_URL}${imgPath})`,
 						};
 					} else {
 						// Sinon, ajouter l'URL de base de l'API
 						return {
-							backgroundImage: `url(${window.config.API_URL}/${imgPath})`,
+							backgroundImage: `url(${window.config.SERVER_URL}/${imgPath})`,
 						};
 					}
 				}
@@ -215,7 +215,7 @@
 
 				axios
 					.delete(
-						`${window.config.API_URL}/actualites/${this.actualiteToDelete}`,
+						`${window.config.SERVER_URL}/actualites/${this.actualiteToDelete}`,
 						{
 							headers: {
 								Authorization: `Bearer ${token}`,
@@ -235,7 +235,7 @@
 						if (error.response && error.response.status === 401) {
 							alert("Non autorisé. Veuillez vous reconnecter.");
 							localStorage.removeItem("token");
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						} else {
 							alert("Erreur lors de la suppression. Veuillez réessayer.");
 						}

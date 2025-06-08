@@ -236,13 +236,13 @@
 				if (!token) {
 					this.error = "Vous devez être connecté pour modifier un produit.";
 					setTimeout(() => {
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					}, 2000);
 					return;
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -254,7 +254,7 @@
 						} else {
 							this.error = "Accès non autorisé.";
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						}
 					})
@@ -263,7 +263,7 @@
 						this.error = "Problème d'authentification.";
 						localStorage.removeItem("token");
 						setTimeout(() => {
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						}, 2000);
 					});
 			},
@@ -271,7 +271,7 @@
 			// Fetch product details
 			fetchProductDetails() {
 				axios
-					.get(`${window.config.API_URL}/catalogue/product/${this.productId}`)
+					.get(`${window.config.SERVER_URL}/catalogue/product/${this.productId}`)
 					.then((response) => {
 						this.product = response.data;
 
@@ -309,7 +309,7 @@
 				const token = localStorage.getItem("token");
 
 				axios
-					.get(`${window.config.API_URL}/categories`, {
+					.get(`${window.config.SERVER_URL}/categories`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -366,7 +366,7 @@
 				if (!token) {
 					this.formError = "Vous devez être connecté pour modifier un produit.";
 					setTimeout(() => {
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					}, 2000);
 					return;
 				}
@@ -392,7 +392,7 @@
 
 				axios
 					.put(
-						`${window.config.API_URL}/catalogue/${this.productId}`,
+						`${window.config.SERVER_URL}/catalogue/${this.productId}`,
 						updateData,
 						{
 							headers: {
@@ -419,7 +419,7 @@
 								"Non autorisé. Vous devez être connecté pour cette action.";
 							localStorage.removeItem("token");
 							setTimeout(() => {
-								this.$router.push("/login");
+								this.$router.push("/connexion");
 							}, 2000);
 						} else {
 							this.formError =
@@ -453,7 +453,7 @@
 				}
 
 				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-				return `${window.config.API_URL}${normalizedPath}`;
+				return `${window.config.SERVER_URL}${normalizedPath}`;
 			},
 
 			// Show cancel confirmation modal
@@ -503,8 +503,7 @@
 
 	/* Hero Section - Smaller for form pages */
 	.page-hero.small-hero {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/catalogue-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		text-align: center;
 		padding: 50px 0;

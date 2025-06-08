@@ -334,7 +334,7 @@
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -354,7 +354,7 @@
 				this.error = null;
 
 				axios
-					.get(`${window.config.API_URL}/catalogue/categories`)
+					.get(`${window.config.SERVER_URL}/catalogue/categories`)
 					.then((response) => {
 						this.categories = response.data;
 					})
@@ -381,7 +381,7 @@
 				}
 
 				const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-				return `${window.config.API_URL}${normalizedPath}`;
+				return `${window.config.SERVER_URL}${normalizedPath}`;
 			},
 
 			// Format price with currency
@@ -451,7 +451,7 @@
 
 				axios
 					.delete(
-						`${window.config.API_URL}/catalogue/${this.productToDelete.id}`,
+						`${window.config.SERVER_URL}/catalogue/${this.productToDelete.id}`,
 						{
 							headers: {
 								Authorization: `Bearer ${token}`,

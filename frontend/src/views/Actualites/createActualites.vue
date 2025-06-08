@@ -189,12 +189,12 @@
 				const token = localStorage.getItem("token");
 
 				if (!token) {
-					this.$router.push("/login");
+					this.$router.push("/connexion");
 					return;
 				}
 
 				axios
-					.get(`${window.config.API_URL}/verify-auth`, {
+					.get(`${window.config.SERVER_URL}/verify-auth`, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -203,13 +203,13 @@
 						if (response.data && response.data.authenticated) {
 							this.isAuthenticated = true;
 						} else {
-							this.$router.push("/login");
+							this.$router.push("/connexion");
 						}
 					})
 					.catch((error) => {
 						console.error("Erreur d'authentification:", error);
 						localStorage.removeItem("token");
-						this.$router.push("/login");
+						this.$router.push("/connexion");
 					});
 			},
 
@@ -344,7 +344,7 @@
 				};
 
 				axios
-					.post(`${window.config.API_URL}/actualites`, formData, config)
+					.post(`${window.config.SERVER_URL}/actualites`, formData, config)
 					.then((response) => {
 						this.successMessage = "L'actualité a été créée avec succès!";
 						this.resetForm();
@@ -400,8 +400,7 @@
 
 	/* Hero Section - Smaller for form pages */
 	.page-hero.small-hero {
-		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-			url("/img/news-header.jpg") center/cover;
+		background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
 		color: white;
 		text-align: center;
 		padding: 50px 0;
