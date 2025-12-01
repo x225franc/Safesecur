@@ -52,21 +52,20 @@
 						:key="actualite.id"
 						class="news-card"
 					>
-						<div class="news-image" :style="getBackgroundImage(actualite.img)">
-							<span class="news-date">{{ formatDate(actualite.date) }}</span>
-						</div>
-						<div class="news-content">
-							<h3>{{ truncateText(actualite.title, 25) }}</h3>
-							<p>{{ truncateText(actualite.description, 40) }}</p>
-							<div class="card-actions">
-								<router-link
-									:to="`/actualites/${actualite.id}`"
-									class="read-more"
-								>
-									Lire la suite <i class="fi fi-rr-arrow-right"></i>
-								</router-link>
-
-								<!-- Admin actions - conditionnellement affichées -->
+					<div class="news-image" :style="getBackgroundImage(actualite.img)">
+						<span class="news-date">{{ formatDate(actualite.date) }}</span>
+					</div>
+					<div class="news-content">
+						<!-- VULNÉRABLE: Affichage HTML non sanitisé permettant XSS -->
+						<h3 v-html="truncateText(actualite.title, 25)"></h3>
+						<p v-html="truncateText(actualite.description, 40)"></p>
+						<div class="card-actions">
+							<router-link
+								:to="`/actualites/${actualite.id}`"
+								class="read-more"
+							>
+								Lire la suite <i class="fi fi-rr-arrow-right"></i>
+							</router-link>								<!-- Admin actions - conditionnellement affichées -->
 								<div v-if="isAuthenticated" class="admin-actions">
 									<router-link
 										:to="`/edit-actualites/${actualite.id}`"

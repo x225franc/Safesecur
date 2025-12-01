@@ -1,0 +1,16 @@
+{
+	"name": "safesecur-root",
+	"version": "1.0.0",
+	"description": "SAFESECUR",
+	"private": true,
+	"scripts": {
+		"start": "concurrently \"npm run server\" \"npm run client\"",
+		"server": "cd server && npm start",
+		"client": "cd frontend && npm run dev",
+		"install:all": "npm install && cd server && npm install && cd ../frontend && npm install",
+		"build": "cd frontend && npm run build"
+	},
+	"devDependencies": {
+		"concurrently": "^8.2.2"
+	}
+}

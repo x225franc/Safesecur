@@ -197,7 +197,8 @@
 			},
 			formatText(text) {
 				if (!text) return "";
-				// Convertit les sauts de ligne en balises <br>
+				// VULNÉRABLE: Retourne le HTML sans sanitisation
+				// Permet l'injection de scripts malveillants
 				return text.replace(/\n/g, "<br>");
 			},
 			confirmDelete() {

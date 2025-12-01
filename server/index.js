@@ -109,6 +109,31 @@ const uploadCatalogue = multer({
 // Middleware pour servir les fichiers statiques
 app.use("/images", express.static("uploads/images"));
 
+// VULNÉRABILITÉ: Path Traversal - Permet l'accès à n'importe quel fichier du système
+app.get("/download/:filename", (req, res) => {
+	const { filename } = req.params;
+	// VULNÉRABLE: Pas de validation du chemin, permet ../../../etc/passwd
+	const filePath = path.join(__dirname, "uploads", filename);
+	res.sendFile(filePath, (err) => {
+		if (err) {
+			res.status(404).json({ error: "File not found" });
+		}
+	});
+});
+
+// VULNÉRABLE: Path Traversal - permet d'accéder à n'importe quel fichier
+app.get("/files/:filename", (req, res) => {
+	const { filename } = req.params;
+	// VULNÉRABLE: Pas de validation du chemin, permet ../../../etc/passwd
+	const filePath = path.join(__dirname, "uploads", filename);
+	
+	res.sendFile(filePath, (err) => {
+		if (err) {
+			res.status(404).json({ error: "Fichier non trouvé" });
+		}
+	});
+});
+
 // MySQL Connection
 const db = mysql.createConnection({
 	host: process.env.HOST,
@@ -167,6 +192,7 @@ ensureDirectoriesExist();
 
 // Routes d'authentification
 // Route de connexion - génère un token JWT
+// VULNÉRABLE: Pas de rate limiting, messages d'erreur trop détaillés
 app.post("/login", (req, res) => {
 	const { username, password } = req.body;
 
@@ -182,9 +208,10 @@ app.post("/login", (req, res) => {
 
 		// Vérifier si l'utilisateur existe
 		if (results.length === 0) {
+			// VULNÉRABLE: Révèle que l'utilisateur n'existe pas
 			return res
 				.status(401)
-				.json({ success: false, message: "Identifiants incorrects" });
+				.json({ success: false, message: "Utilisateur inexistant", username: username });
 		}
 
 		const user = results[0];
@@ -193,22 +220,25 @@ app.post("/login", (req, res) => {
 		try {
 			const match = await bcrypt.compare(password, user.password);
 			if (!match) {
+				// VULNÉRABLE: Révèle que le mot de passe est incorrect
 				return res
 					.status(401)
-					.json({ success: false, message: "Identifiants incorrects" });
+					.json({ success: false, message: "Mot de passe incorrect", username: username });
 			}
 
 			// Générer un token JWT
+			// VULNÉRABLE: Pas d'expiration courte
 			const token = jwt.sign(
 				{ userId: user.id, username: user.username },
 				JWT_SECRET,
-				{ expiresIn: "24h" }
+				{ expiresIn: "30d" }
 			);
 
 			return res.status(200).json({
 				success: true,
 				token,
-				user: { id: user.id, username: user.username },
+				// VULNÉRABLE: Expose trop d'informations utilisateur
+				user: { id: user.id, username: user.username, email: user.email, created_at: user.created_at },
 			});
 		} catch (error) {
 			console.error(error);
@@ -258,7 +288,8 @@ app.post("/logout", (req, res) => {
 
 // CRUD for Category
 // Route pour récupérer toutes les catégories avec le nombre de produits associés
-app.get("/categories", verifyToken, (req, res) => {
+// VULNÉRABLE: Pas d'authentification requise pour accéder aux données
+app.get("/categories", (req, res) => {
 	const query = `
     SELECT c.*, (SELECT COUNT(*) FROM catalogue WHERE category_id = c.id) as productCount
     FROM category c
@@ -603,16 +634,18 @@ app.get("/catalogue/categories", (req, res) => {
 });
 
 // Route pour récupérer un produit spécifique par ID
+// VULNÉRABLE: SQL Injection via paramètre id
 app.get("/catalogue/product/:id", (req, res) => {
 	const { id } = req.params;
-	const query = "SELECT * FROM catalogue WHERE id = ?";
+	// VULNÉRABLE: Concaténation directe sans validation
+	const query = `SELECT * FROM catalogue WHERE id = ${id}`;
 
-	db.query(query, [id], (err, results) => {
+	db.query(query, (err, results) => {
 		if (err) {
 			console.error("Erreur lors de la récupération du produit:", err);
 			return res
 				.status(500)
-				.json({ success: false, message: "Erreur serveur" });
+				.json({ success: false, message: "Erreur serveur", error: err.message });
 		}
 
 		if (results.length === 0) {
@@ -649,12 +682,13 @@ app.get("/catalogue/category-name/:id", (req, res) => {
 });
 
 // Route pour récupérer les produits d'une catégorie spécifique
+// VULNÉRABLE: SQL Injection via categoryId
 app.get("/catalogue/by-category/:categoryId", (req, res) => {
 	const { categoryId } = req.params;
-	const query =
-		"SELECT * FROM catalogue WHERE category_id = ? ORDER BY id DESC";
+	// VULNÉRABLE: Pas de requête paramétrée
+	const query = `SELECT * FROM catalogue WHERE category_id = ${categoryId} ORDER BY id DESC`;
 
-	db.query(query, [categoryId], (err, results) => {
+	db.query(query, (err, results) => {
 		if (err) {
 			console.error(
 				"Erreur lors de la récupération des produits par catégorie:",
@@ -662,7 +696,7 @@ app.get("/catalogue/by-category/:categoryId", (req, res) => {
 			);
 			return res
 				.status(500)
-				.json({ success: false, message: "Erreur serveur" });
+				.json({ success: false, message: "Erreur serveur", error: err.message });
 		}
 
 		res.json(results);
@@ -938,13 +972,16 @@ app.get("/actualites", (req, res) => {
 });
 
 // recuperer une actualite par id
+// VULNÉRABLE: SQL Injection via paramètre id
 app.get("/actualites/:id", (req, res) => {
 	const { id } = req.params;
-	const query = "SELECT * FROM actualites WHERE id = ?";
-	db.query(query, [id], (err, results) => {
+	// VULNÉRABLE: Concaténation SQL directe
+	const query = `SELECT * FROM actualites WHERE id = ${id}`;
+	db.query(query, (err, results) => {
 		if (err) {
 			console.error(err);
-			res.status(500).send("Error fetching actualite");
+			// VULNÉRABLE: Expose les détails de l'erreur SQL
+			res.status(500).json({ error: "Error fetching actualite", details: err.message });
 		} else if (results.length === 0) {
 			res.status(404).send("Actualite not found");
 		} else {

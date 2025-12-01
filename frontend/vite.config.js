@@ -2,13 +2,13 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+// import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    vueDevTools(),
+    // vueDevTools(),
   ],
   resolve: {
     alias: {
@@ -19,10 +19,10 @@ export default defineConfig({
     port: 3006,
   },
   define: {
-    // 'window.config.FRONTEND_URL': JSON.stringify('http://localhost:3006'),
-    // 'window.config.SERVER_URL': JSON.stringify('http://localhost:3005'),
-    'window.config.FRONTEND_URL': JSON.stringify('https://safesecur.com'),
-    'window.config.SERVER_URL': JSON.stringify('https://server.safesecur.com'),
+    'window.config.FRONTEND_URL': JSON.stringify('http://localhost:3006'),
+    'window.config.SERVER_URL': JSON.stringify('http://localhost:3005'),
+    // 'window.config.FRONTEND_URL': JSON.stringify('https://safesecur.com'),
+    // 'window.config.SERVER_URL': JSON.stringify('https://server.safesecur.com'),
     
   }
 })

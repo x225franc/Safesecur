@@ -70,14 +70,12 @@
 								</router-link>
 							</div>
 
-							<div class="product-description">
-								<h3>Description</h3>
-								<div class="description-content">
-									{{ product.description }}
-								</div>
+						<div class="product-description">
+							<h3>Description</h3>
+							<!-- VULNÉRABLE: Affichage HTML non sanitisé permettant XSS -->
+							<div class="description-content" v-html="product.description">
 							</div>
-
-							<div class="contact-cta" v-if="!isAuthenticated">
+						</div>							<div class="contact-cta" v-if="!isAuthenticated">
 								<h3>Intéressé par ce produit?</h3>
 								<p>
 									Contactez-nous pour plus d'informations ou pour passer une
