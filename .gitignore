@@ -8,5 +8,4 @@
 /server/build
 /server/.env
 /server/uploads
-safesecur.sql
 node_modules
