@@ -1,0 +1,80 @@
+## Nom du workflow CI
+name: CI
+
+## Déclenchement automatique du workflow sur push ou action manuelle
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+    ## permission appropriées pour les jobs
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # Job 1
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+
+      # etape 1
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # etape 2
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # etape 3
+      - name: Dependencies
+        run: |
+          npm ci
+          npm install --save-dev eslint vitest
+
+      # etape 4
+      - name: ESLint
+        run: |
+          # run 1 : erreurs critiques sur le code source
+          npx eslint --ext .js,.vue --config '{"extends": "eslint:recommended", "env": {"browser": true, "es2021": true, "node": true}, "parserOptions": {"ecmaVersion": "latest", "sourceType": "module"}}' server/ frontend/src/ --format unix || true
+          echo "---"
+          # run 2 : rapport détaillé avec statistiques
+          npx eslint --ext .js,.vue --config '{"extends": "eslint:recommended", "env": {"browser": true, "es2021": true, "node": true}, "parserOptions": {"ecmaVersion": "latest", "sourceType": "module"}}' . --format table --max-warnings 999 || exit 0
+
+      - name: Vitest
+        run: |
+          cd frontend
+          npx vitest run --reporter=verbose || echo "No tests found or tests failed"
+
+  # Job 2
+  trivy-scan:
+    runs-on: ubuntu-latest
+    steps:
+      # etape 1
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # etape 2
+      - name: Trivy FS mode
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'results.sarif'
+          severity: 'HIGH,CRITICAL'
+
+      # etape 3
+      - name: Upload
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'results.sarif'

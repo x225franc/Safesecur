@@ -12,6 +12,7 @@ import editActualites from '@/views/Actualites/editActualites.vue';
 import viewActualites from '@/views/Actualites/viewActualites.vue';
 import Contacts from '@/views/Contacts.vue';
 import Login from '@/views/Login.vue';
+import Signup from '@/views/Signup.vue';
 import Logout from '@/views/Logout.vue';
 
 const routes = [
@@ -28,6 +29,7 @@ const routes = [
     { path: '/actualites/:id', name: 'ViewActualites', component: viewActualites, meta: { title: 'Voir une actualité - Safesecur', showHeaderFooter: true } },
     { path: '/contacts', name: 'Contacts', component: Contacts, meta: { title: 'Contacts - Safesecur', showHeaderFooter: true } },
     { path: '/login', name: 'Login', component: Login, meta: { title: 'Connexion - Safesecur', showHeaderFooter: false } },
+    { path: '/signup', name: 'Signup', component: Signup, meta: { title: 'Inscription - Safesecur', showHeaderFooter: false } },
     { path: '/logout', name: 'Logout', component: Logout, meta: { title: 'Déconnexion - Safesecur', showHeaderFooter: false } },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/Notfound.vue'), meta: { title: '404 - Page non trouvée', showHeaderFooter: false } },
 ];

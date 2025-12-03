@@ -1,0 +1,73 @@
+## Docker-Compose pour SafeSecur: base de données MySQL, application web et phpMyAdmin
+version: '3.8'
+
+services:
+  # Base de données MySQL
+  db:
+    image: mysql:8.0
+    container_name: safesecur-db
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: safesecur
+      MYSQL_USER: safesecur_user
+      MYSQL_PASSWORD: safesecur_pass
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./safesecur.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Application web
+  app:
+    build: .
+    container_name: safesecur-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      USER: safesecur_user
+      PASSWORD: safesecur_pass
+      DATABASE: safesecur
+      PORT: 3005
+      ONLINE: "false"
+      JWT_SECRET: your_super_secret_jwt_key_change_me_in_production
+      MAIL_HOST: smtp.example.com
+      MAIL_PORT: 587
+      MAIL_USER: your_email@example.com
+      MAIL_PASSWORD: your_email_password
+      SERVER_URL: http://localhost:3005
+    volumes:
+      - uploads-data:/app/server/uploads
+    ports:
+      - "3005:3005"
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: safesecur-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: safesecur_user
+      PMA_PASSWORD: safesecur_pass
+      MYSQL_ROOT_PASSWORD: 
+    ports:
+      - "8080:80"
+
+volumes:
+  db-data:
+    name: safesecur-db-data
+  uploads-data:
+    name: safesecur-uploads

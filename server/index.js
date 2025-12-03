@@ -249,6 +249,82 @@ app.post("/login", (req, res) => {
 	});
 });
 
+// Route pour l'inscription
+app.post("/signup", async (req, res) => {
+	const { username, password } = req.body;
+
+	// Validation basique
+	if (!username || !password) {
+		return res.status(400).json({ 
+			success: false, 
+			message: "Nom d'utilisateur et mot de passe requis" 
+		});
+	}
+
+	if (password.length < 3) {
+		return res.status(400).json({ 
+			success: false, 
+			message: "Le mot de passe doit contenir au moins 3 caractères" 
+		});
+	}
+
+	// Vérifier si l'utilisateur existe déjà
+	const checkQuery = "SELECT * FROM user WHERE username = ?";
+	db.query(checkQuery, [username], async (err, results) => {
+		if (err) {
+			console.error(err);
+			return res.status(500).json({ 
+				success: false, 
+				message: "Erreur du serveur" 
+			});
+		}
+
+		if (results.length > 0) {
+			return res.status(409).json({ 
+				success: false, 
+				message: "Ce nom d'utilisateur est déjà pris" 
+			});
+		}
+
+		// Hasher le mot de passe avec bcrypt
+		try {
+			const hashedPassword = await bcrypt.hash(password, 10);
+
+			// Insérer le nouvel utilisateur
+			const insertQuery = "INSERT INTO user (username, password) VALUES (?, ?)";
+			db.query(insertQuery, [username, hashedPassword], (err, result) => {
+				if (err) {
+					console.error(err);
+					return res.status(500).json({ 
+						success: false, 
+						message: "Erreur lors de la création du compte" 
+					});
+				}
+
+				// Générer un token JWT pour l'utilisateur nouvellement créé
+				const token = jwt.sign(
+					{ userId: result.insertId, username: username },
+					JWT_SECRET,
+					{ expiresIn: "30d" }
+				);
+
+				return res.status(201).json({
+					success: true,
+					message: "Compte créé avec succès",
+					token,
+					user: { id: result.insertId, username: username }
+				});
+			});
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json({ 
+				success: false, 
+				message: "Erreur lors du hashage du mot de passe" 
+			});
+		}
+	});
+});
+
 // Middleware pour vérifier le token JWT
 const verifyToken = (req, res, next) => {
 	const authHeader = req.headers.authorization;
@@ -1345,6 +1421,10 @@ app.get("/categories/public", (req, res) => {
 
 		res.json(results);
 	});
+});
+// Servir les fichiers statiques depuis le dossier 'public'
+app.use((req, res) => {
+	res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 if (process.env.ONLINE == "false") {
