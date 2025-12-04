@@ -38,13 +38,13 @@ CREATE TABLE
     `id` int NOT NULL,
     `title` varchar(150) CHARACTER
     SET
-      utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+      utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
       `description` varchar(1000) CHARACTER
     SET
-      utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+      utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
       `date` date DEFAULT NULL,
       `img` varchar(1000) DEFAULT NULL
-  ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+  ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 --
@@ -58,7 +58,7 @@ CREATE TABLE
     `description` text,
     `price` int NOT NULL,
     `img` varchar(1000) DEFAULT NULL
-  ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+  ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 
 -- --------------------------------------------------------
@@ -66,7 +66,7 @@ CREATE TABLE
 -- Table structure for table `category`
 --
 CREATE TABLE
-  `category` (`id` int NOT NULL, `name` varchar(100) NOT NULL) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+  `category` (`id` int NOT NULL, `name` varchar(100) NOT NULL) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `category`
@@ -86,7 +86,7 @@ CREATE TABLE
     `id` int NOT NULL,
     `username` varchar(100) NOT NULL,
     `password` varchar(255) NOT NULL
-  ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+  ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
